@@ -1,87 +1,44 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class PlayerInput : MonoBehaviour
 {
-    // Made because this is called for inputs only when player makes it.
-    public Vector2 MoveInput { get; private set; }
-    public Vector2 LookInput { get; private set; }
-    public bool IsSprinting { get; private set; }
-    public bool IsJumping { get; private set; }
-    public bool LeftClickPressed { get; private set; }
-    public bool RightClickPressed { get; private set; }
-    private InputActions inputActions;
+    [SerializeField] private InputActionAsset inputActions;
+    private InputActionAsset runtimeActions;
+    private InputActionMap playerMap;
+    private InputAction move, look, jump, sprint, leftClick, rightClick;
+
+    public Vector2 MoveInput => move != null && move.enabled ? move.ReadValue<Vector2>() : Vector2.zero;
+    public Vector2 LookInput => look != null && look.enabled ? look.ReadValue<Vector2>() : Vector2.zero;
+    public bool IsSprinting => sprint != null && sprint.enabled && sprint.IsPressed();
+    public bool IsJumping => jump != null && jump.enabled && jump.WasPressedThisFrame();
+    public bool LeftClickPressed => leftClick != null && leftClick.enabled && leftClick.WasPressedThisFrame();
+    public bool RightClickPressed => rightClick != null && rightClick.enabled && rightClick.WasPressedThisFrame();
 
     private void Awake()
     {
-        inputActions = new InputActions(); // Handles all input here.
+        if (inputActions == null)
+        {
+            Debug.LogError("Assign FriendSlopControls to PlayerInput's Input Actions field.", this);
+            enabled = false;
+            return;
+        }
 
-// If moving, get value. if not, zero.
-        inputActions.Player.Move.performed += ctx =>
-            MoveInput = ctx.ReadValue<Vector2>();
-
-        inputActions.Player.Move.canceled += ctx =>
-            MoveInput = Vector2.zero;
-
-// Mouse Value for Looking (Up down only)
-        inputActions.Player.Look.performed += ctx =>
-            LookInput = ctx.ReadValue<Vector2>();
-
-        inputActions.Player.Look.canceled += ctx =>
-            LookInput = Vector2.zero;
-
-// Jump
-inputActions.Player.Jump.performed += OnJumpPerformed;
-
-
-// Sprint. Toggle.
-        inputActions.Player.Sprint.performed += ctx =>
-            IsSprinting = true;
-
-        inputActions.Player.Sprint.canceled += ctx =>
-            IsSprinting = false;
-
-    inputActions.Player.InteractLeft.performed += OnLeftClick;
-    inputActions.Player.InteractRight.performed += OnRightClick;
-
+        runtimeActions = Instantiate(inputActions);
+        playerMap = runtimeActions.FindActionMap("Player", true);
+        move = playerMap.FindAction("Move", true);
+        look = playerMap.FindAction("Look", true);
+        jump = playerMap.FindAction("Jump", true);
+        sprint = playerMap.FindAction("Sprint", true);
+        leftClick = playerMap.FindAction("InteractLeft", true);
+        rightClick = playerMap.FindAction("InteractRight", true);
     }
 
-    // Not to multiple jumps.
-private void OnJumpPerformed(InputAction.CallbackContext context)
-{
-    IsJumping = true;
-}
-public void ResetJump()
-{
-    IsJumping = false;
-}
-private void OnLeftClick(InputAction.CallbackContext context)
-{
-    LeftClickPressed = true;
-}
-
-private void OnRightClick(InputAction.CallbackContext context)
-{
-    RightClickPressed = true;
-}
-public void ResetLeftClick()
-{
-    LeftClickPressed = false;
-}
-
-public void ResetRightClick()
-{
-    RightClickPressed = false;
-}
-
-// turning on and off input system when player is enabled/disabled.
-    private void OnEnable()
+    private void OnEnable() => playerMap?.Enable();
+    private void OnDisable() => playerMap?.Disable();
+    private void OnDestroy()
     {
-        inputActions.Enable();
-    }
-
-    private void OnDisable()
-    {
-        inputActions.Disable();
+        if (runtimeActions != null) Destroy(runtimeActions);
     }
 }

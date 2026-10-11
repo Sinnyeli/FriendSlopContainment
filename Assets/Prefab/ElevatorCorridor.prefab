@@ -48,21 +48,49 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 736770095591357070, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 876066417378307537, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2110886208274305495, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2760740334248229597, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3590352651361239620, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3762551486511249410, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4857234373760142059, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5891957367874098065, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
       propertyPath: m_Name
-      value: Corridor (5) Variant
+      value: ElevatorCorridor
       objectReference: {fileID: 0}
-    - target: {fileID: 7067320784089666225, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.25
+    - target: {fileID: 6324158093326261896, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7067320784089666225, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
+    - target: {fileID: 8157891930697170122, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7067320784089666225, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.5
+    - target: {fileID: 8486418098935812516, guid: 584b96e109ec4703da67ce2d52fe0685, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

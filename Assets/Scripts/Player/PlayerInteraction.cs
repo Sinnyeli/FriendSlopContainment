@@ -1,193 +1,46 @@
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerInput), typeof(PlayerHands))]
 public class PlayerInteraction : MonoBehaviour
 {
-    [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-
-    [Header("Interaction")]
     [SerializeField] private float interactRange = 3f;
-
-    [Header("Work")]
-    [SerializeField] private WorkRaycast workRaycast;
-    [SerializeField] private WorkAction bareHandWorkAction;
-
+    [SerializeField] private LayerMask interactionMask = ~0;
     private PlayerInput inputHandler;
-    private PlayerHands playerHands;
-
+    private PlayerHands hands;
 
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInput>();
-        playerHands = GetComponent<PlayerHands>();
+        hands = GetComponent<PlayerHands>();
+        if (playerCamera == null) playerCamera = GetComponentInChildren<Camera>();
+        if (playerCamera == null)
+        {
+            Debug.LogError("PlayerInteraction needs a player camera.", this);
+            enabled = false;
+        }
     }
-
 
     private void Update()
     {
-        if (inputHandler.LeftClickPressed)
-        {
-            HandleHand(HandType.Left);
-
-            inputHandler.ResetLeftClick();
-        }
-
-
-        if (inputHandler.RightClickPressed)
-        {
-            HandleHand(HandType.Right);
-
-            inputHandler.ResetRightClick();
-        }
+        if (inputHandler.LeftClickPressed) HandleHand(HandType.Left);
+        if (inputHandler.RightClickPressed) HandleHand(HandType.Right);
     }
-
 
     private void HandleHand(HandType hand)
     {
-        HoldableItems heldItem =
-            playerHands.GetItem(hand);
-
-
-        // ------------------------------------------------
-        // HAND HAS AN ITEM
-        // ------------------------------------------------
-
-        if (heldItem != null)
+        HoldableItems item = hands.GetItem(hand);
+        if (item != null)
         {
-            // Let the held item perform its normal function.
-            heldItem.Use();
-
-
-            // Also attempt Work.
-            TryWork(hand, heldItem);
-
-
+            item.Use();
             return;
         }
 
-
-        // ------------------------------------------------
-        // HAND IS EMPTY
-        // ------------------------------------------------
-
-        TryBareHandWork();
-
-        InteractWithWorld(hand);
-    }
-
-
-    // ====================================================
-    // WORK
-    // ====================================================
-
-    private void TryWork(
-        HandType hand,
-        HoldableItems heldItem)
-    {
-        if (workRaycast == null)
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactionMask, QueryTriggerInteraction.Ignore))
         {
-            return;
-        }
-
-
-        AbnormalityTool tool =
-            heldItem.GetComponent<AbnormalityTool>();
-
-
-        if (tool == null)
-        {
-            return;
-        }
-
-
-        WorkAction workAction =
-            tool.GetWorkAction();
-
-
-        if (workAction == null)
-        {
-            return;
-        }
-
-
-        workRaycast.TryWork(
-            workAction
-        );
-    }
-
-
-    private void TryBareHandWork()
-{
-    Debug.Log(
-        "[WORK TEST] TryBareHandWork() called."
-    );
-
-
-    if (workRaycast == null)
-    {
-        Debug.LogError(
-            "[WORK TEST] WorkRaycast is NULL."
-        );
-
-        return;
-    }
-
-
-    if (bareHandWorkAction == null)
-    {
-        Debug.LogError(
-            "[WORK TEST] BareHandWorkAction is NULL."
-        );
-
-        return;
-    }
-
-
-    Debug.Log(
-        "[WORK TEST] Sending Bare Hand Action to WorkRaycast."
-    );
-
-
-    workRaycast.TryWork(
-        bareHandWorkAction
-    );
-}
-
-    // ====================================================
-    // NORMAL WORLD INTERACTION
-    // ====================================================
-
-    private void InteractWithWorld(
-        HandType hand)
-    {
-        Ray ray =
-            playerCamera.ViewportPointToRay(
-                new Vector3(
-                    0.5f,
-                    0.5f,
-                    0f
-                )
-            );
-
-
-        if (Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            interactRange))
-        {
-            IInteractable interactable =
-                hit.collider.GetComponent<IInteractable>();
-
-
-            if (interactable != null)
-            {
-                interactable.Interact(hand);
-
-                Debug.Log(
-                    "Interacted with: " +
-                    hit.collider.name
-                );
-            }
+            IInteractable target = hit.collider.GetComponentInParent<IInteractable>();
+            target?.Interact(hand);
         }
     }
 }
